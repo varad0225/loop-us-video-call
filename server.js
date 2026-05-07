@@ -18,13 +18,30 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://varadsingh0225_db_user:xBUVK953ae3Hnn3d@cluster0.0c0svac.mongodb.net/couples_call?retryWrites=true&w=majority&appName=Cluster0';
-mongoose.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 30000,
-  socketTimeoutMS: 45000,
-  connectTimeoutMS: 30000
-}).then(() => console.log('Connected to MongoDB Cloud/Local Database'))
-  .catch(err => console.error('MongoDB connection error:', err));
+const { MongoMemoryServer } = require('mongodb-memory-server');
+
+async function connectDB() {
+    if (process.env.NODE_ENV === 'production') {
+        console.log('Starting internal in-memory MongoDB server (Bypassing Atlas)...');
+        const mongoServer = await MongoMemoryServer.create();
+        const uri = mongoServer.getUri();
+        await mongoose.connect(uri, {
+            serverSelectionTimeoutMS: 30000,
+            socketTimeoutMS: 45000,
+            connectTimeoutMS: 30000
+        });
+        console.log('Connected to In-Memory MongoDB');
+    } else {
+        const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://varadsingh0225_db_user:xBUVK953ae3Hnn3d@cluster0.0c0svac.mongodb.net/couples_call?retryWrites=true&w=majority&appName=Cluster0';
+        await mongoose.connect(MONGODB_URI, {
+            serverSelectionTimeoutMS: 30000,
+            socketTimeoutMS: 45000,
+            connectTimeoutMS: 30000
+        });
+        console.log('Connected to MongoDB Cloud/Local Database');
+    }
+}
+connectDB().catch(err => console.error('MongoDB connection error:', err));
 
 // Define User Schema
 const userSchema = new mongoose.Schema({
