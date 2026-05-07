@@ -20,8 +20,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Connect to MongoDB
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://varadsingh0225_db_user:xBUVK953ae3Hnn3d@cluster0.0c0svac.mongodb.net/couples_call?retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 45000,
+  connectTimeoutMS: 30000
 }).then(() => console.log('Connected to MongoDB Cloud/Local Database'))
   .catch(err => console.error('MongoDB connection error:', err));
 
