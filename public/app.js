@@ -637,15 +637,20 @@ socket.on('offer', async (offer) => {
             }
         };
         
-        // Process any buffered ICE candidates
-        if (window.pendingIceCandidates) {
-            window.pendingIceCandidates.forEach(c => peerConnection.addIceCandidate(new RTCIceCandidate(c)));
-            window.pendingIceCandidates = [];
-        }
+        // We don't process ICE candidates here anymore. We must wait until setRemoteDescription is done.
     }
 
     try {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+        
+        // NOW we can process buffered ICE candidates safely
+        if (window.pendingIceCandidates) {
+            for (let c of window.pendingIceCandidates) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(c));
+            }
+            window.pendingIceCandidates = [];
+        }
+
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         socket.emit('answer', { roomId: currentRoomId, answer: answer });
@@ -660,6 +665,14 @@ socket.on('offer', async (offer) => {
 socket.on('answer', async (answer) => {
     try {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        
+        // NOW we can process buffered ICE candidates safely
+        if (window.pendingIceCandidates) {
+            for (let c of window.pendingIceCandidates) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(c));
+            }
+            window.pendingIceCandidates = [];
+        }
     } catch (err) {
         console.error("Error handling answer", err);
     }
@@ -667,7 +680,7 @@ socket.on('answer', async (answer) => {
 
 socket.on('ice_candidate', async (candidate) => {
     try {
-        if (peerConnection) {
+        if (peerConnection && peerConnection.remoteDescription) {
             await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
         } else {
             console.log("Buffering early ICE candidate");
