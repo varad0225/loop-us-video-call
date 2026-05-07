@@ -57,8 +57,11 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 2rem 0;
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
@@ -208,6 +211,7 @@ h1 {
     border-radius: 1.5rem;
     width: 90%;
     max-width: 480px;
+    margin: auto;
     box-shadow: 0 0 40px rgba(236, 72, 153, 0.1), inset 0 0 20px rgba(255,255,255,0.05);
     display: flex;
     flex-direction: column;
@@ -871,6 +875,7 @@ h1 {
     padding: 3rem;
     z-index: 10;
     max-width: 800px;
+    margin: auto;
     animation: gentleFloat 6s ease-in-out infinite;
 }
 
@@ -1069,10 +1074,10 @@ h1 {
 /* Top Controls (Profile & Logout) */
 .dashboard-header {
     position: absolute;
-    top: 2rem;
-    right: 2rem;
+    top: 1rem;
+    right: 1rem;
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
     z-index: 50;
 }
 
