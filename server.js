@@ -71,7 +71,7 @@ app.post('/api/register', async (req, res) => {
         res.json({ message: 'Registered successfully', user: { id: newUser._id, name: newUser.name, username: newUser.username, profilePic: newUser.profilePic } });
     } catch (err) {
         console.error("Register Error:", err);
-        res.status(500).json({ error: 'Server error during registration' });
+        res.status(500).json({ error: 'Server error during registration', details: err.message });
     }
 });
 
@@ -91,7 +91,7 @@ app.post('/api/login', async (req, res) => {
         res.json({ message: 'Logged in successfully', user: { id: user._id, name: user.name, username: user.username, profilePic: user.profilePic } });
     } catch (err) {
         console.error("Login Error:", err);
-        res.status(500).json({ error: 'Server error during login' });
+        res.status(500).json({ error: 'Server error during login', details: err.message });
     }
 });
 
